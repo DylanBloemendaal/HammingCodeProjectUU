@@ -106,7 +106,7 @@ class Matrix:
 # TODO: Write functions that can encode, decode, and possibly correct messages
 #       using the parity bit and the Hamming(7,4) code.
 
-def CreateHamming(message):
+def EncodeHamming(message):
     """Turns a string of four bits (e.g. '1011') into a Hamming(7,4) code
         using matrix multiplication"""
     x = Vector([int(bit) for bit in message])

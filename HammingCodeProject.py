@@ -38,7 +38,7 @@ class Vector:
 
 
 class Matrix:
-    """Matrix multiplication and addition"""
+    """Matrix multiplication and addition return as a list"""
     """Working: M + M, M * M, M * V"""
 
     def __init__(self, lst):
@@ -153,7 +153,7 @@ def EncodeMessage(message):
         HammingCode = EncodeNibble(nibble)
         HammingCodes.append(HammingCode)
 
-    # Return HammingCodes in the form of a list
+    # Return list of HammingCodes in the form of a list
     return HammingCodes
 
 
@@ -196,6 +196,7 @@ def DecodeHamming(HammingCode):
 
 
 x = '1001101011010011010101001100101011111'
+print(EncodeMessage(x))
 y, z = EncodeRandom()
 print(y, z)
 print(DecodeHamming(z))

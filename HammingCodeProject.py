@@ -1,7 +1,7 @@
 # Dylan Bloemendaal     9485961
 # Hugo van Hattem       1957074
 
-# ###############################FUNCTIONS#####################################
+# ###############################CLASSES#####################################
 
 # TODO: Create classes to perform calculations with matrices and vectors whose
 #       elements are 0 or 1. Your classes should support at least addition and
@@ -97,13 +97,15 @@ class Matrix:
         return Vector(vector_output)
 
 
+# ################################FUNCTIONS####################################
+
 # TODO: Write functions that can encode, decode, and possibly correct messages
 #       using the parity bit and the Hamming(7,4) code.
 
 # TODO: Write a function that randomly converts a given number of bits to test
 #       your code.
 
-# #################################MAIN######################################## 123 abc 987
+# #################################MAIN########################################
 
 # TODO: Your code should be able to translate a given message, provided as a string,
 #       into binary format and be able to encode it, correct it if necessary and decode

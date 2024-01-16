@@ -103,7 +103,7 @@ class Matrix:
 # TODO: Write a function that randomly converts a given number of bits to test
 #       your code.
 
-# #################################MAIN######################################## 123 abc
+# #################################MAIN######################################## 123 abc 987
 
 # TODO: Your code should be able to translate a given message, provided as a string,
 #       into binary format and be able to encode it, correct it if necessary and decode

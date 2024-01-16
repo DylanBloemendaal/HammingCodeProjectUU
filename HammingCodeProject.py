@@ -31,13 +31,14 @@ class Vector:
             else:
                 vector_sum.append(0)
 
-        return Vector(vector_sum)
+        return vector_sum
 
     def __mul__(self, other):
         return
 
 
 class Matrix:
+    """Matrix multiplication and addition"""
     """Working: M + M, M * M, M * V"""
 
     def __init__(self, lst):
@@ -61,7 +62,7 @@ class Matrix:
 
             matrix_sum.append(matrix_sum_row)
 
-        return Matrix(matrix_sum)
+        return matrix_sum
 
     def __mul__(self, other):
 
@@ -85,7 +86,7 @@ class Matrix:
 
                 matrix_product.append(matrix_product_row)
 
-            return Matrix(matrix_product)
+            return matrix_product
 
         # Multiplying a matrix with a vector
         else:
@@ -103,7 +104,7 @@ class Matrix:
             if len(vector_output) == 1:
                 return vector_output[0]
             else:
-                return Vector(vector_output)
+                return vector_output
 
 
 # ################################FUNCTIONS####################################
@@ -126,6 +127,7 @@ def EncodeNibble(nibble):
                 [0, 0, 0, 1]])
 
     HammingCode = G*x
+    # Return HammingCode in the form of a list
     return HammingCode
 
 
@@ -151,6 +153,7 @@ def EncodeMessage(message):
         HammingCode = EncodeNibble(nibble)
         HammingCodes.append(HammingCode)
 
+    # Return HammingCodes in the form of a list
     return HammingCodes
 
 
@@ -169,6 +172,17 @@ def EncodeRandom():
     return nibble, HammingCode
 
 
+def DecodeHamming(HammingCode):
+    """Decodes a Hamming(7,4) code into a nibble."""
+
+    nibble = ""
+    for indx, bit in enumerate(HammingCode):
+        if indx + 1 in (3, 5, 6, 7):
+            nibble += str(bit)
+
+    return nibble
+
+
 # #################################MAIN########################################
 
 # TODO: Your code should be able to translate a given message, provided as a string,
@@ -184,4 +198,4 @@ def EncodeRandom():
 x = '1001101011010011010101001100101011111'
 y, z = EncodeRandom()
 print(y, z)
-print(z)
+print(DecodeHamming(z))

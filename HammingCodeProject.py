@@ -133,6 +133,7 @@ def EncodeMessage(message):
     """Splits the message into nibbles of size 4 and encodes them into Hamming(7,4) codes.
         The input should be in the form of a string (e.g. '011000111000')"""
 
+    # Split the message into a list of nibbles
     nibbles = []
     nibble = []
     counter = 1
@@ -144,6 +145,7 @@ def EncodeMessage(message):
             counter = 0
         counter += 1
 
+    # Create a Hamming(7,4) code for each nibble.
     HammingCodes = []
     for nibble in nibbles:
         HammingCode = EncodeNibble(nibble)
@@ -152,7 +154,13 @@ def EncodeMessage(message):
     return HammingCodes
 
 
+# TODO: Write a function that randomly converts a given number of bits to test
+#       your code.
+
+
 def EncodeRandom():
+    """Generates a random nibble and encodes it into a Hamming(7,4) code."""
+
     RandomBits = [rn.randint(0, 1) for i in range(4)]
     nibble = ""
     for bit in RandomBits:
@@ -160,9 +168,6 @@ def EncodeRandom():
     HammingCode = EncodeNibble(nibble)
     return nibble, HammingCode
 
-
-# TODO: Write a function that randomly converts a given number of bits to test
-#       your code.
 
 # #################################MAIN########################################
 
@@ -179,3 +184,4 @@ def EncodeRandom():
 x = '1001101011010011010101001100101011111'
 y, z = EncodeRandom()
 print(y, z)
+print(z)

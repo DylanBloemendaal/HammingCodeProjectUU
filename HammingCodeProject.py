@@ -102,6 +102,8 @@ class Matrix:
 # TODO: Write functions that can encode, decode, and possibly correct messages
 #       using the parity bit and the Hamming(7,4) code.
 
+def 
+
 # TODO: Write a function that randomly converts a given number of bits to test
 #       your code.
 

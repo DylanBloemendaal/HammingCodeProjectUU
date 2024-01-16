@@ -93,8 +93,12 @@ class Matrix:
                     element += self.lst[row_indx][indx] * other.lst[indx]
 
                 vector_output.append(element % 2)
-
-        return Vector(vector_output)
+            
+            # If output is a 1x1-matrix then return the value
+            if len(vector_output) == 1:
+                return vector_output[0]
+            else:
+                return Vector(vector_output)
 
 
 # ################################FUNCTIONS####################################
@@ -102,7 +106,21 @@ class Matrix:
 # TODO: Write functions that can encode, decode, and possibly correct messages
 #       using the parity bit and the Hamming(7,4) code.
 
-def 
+def CreateHamming(message):
+    """Turns a string of four bits (e.g. '1011') into a Hamming(7,4) code
+        using matrix multiplication"""
+    x = Vector([int(bit) for bit in message])
+    # Generator matrix
+    G = Matrix([[1, 1, 0, 1],
+                [1, 0, 1, 1],
+                [1, 0, 0, 0],
+                [0, 1, 1, 1],
+                [0, 1, 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]])
+
+    HammingCode = G*x
+    return HammingCode
 
 # TODO: Write a function that randomly converts a given number of bits to test
 #       your code.
@@ -122,5 +140,6 @@ def
 x = Matrix([[1,0,0,0], [0,1,0,0]])*Vector([1,0,1,1])
 y = Vector([1,0,1,0,0,1])+Vector([0,0,1,1,1,1])+Vector([1,0,1,0,0,1])
 
-print(x, type(x))
+inputs = "1001"
+y = GenerateHamming(inputs)
 print(y, type(y))

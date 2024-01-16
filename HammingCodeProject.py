@@ -171,6 +171,23 @@ def EncodeRandom():
     HammingCode = EncodeNibble(nibble)
     return nibble, HammingCode
 
+def parity(HammingCodes):
+    """Checks if there aren't any mistakes in the nibble"""
+      for Codes in HammingCodes:
+        Recieved = Vector(Codes)
+        sevenfourparity = Matrix([[0,0,0,1,1,1,1], [0,1,1,0,0,1,1],[1,0,1,0,1,0,1]])*Recieved
+        sfparity = bin(int(''.join(map(str, sevenfourparity)), 2) << 1)
+        Corrected = []
+        if sfparity == 0:
+            Corrected.append(Codes)
+        else:
+            Codes[sfparity-1] = (Codes[sfparity-1] + 1) % 2
+            Corrected.append(Codes)
+            
+        return Corrected
+
+        
+
 
 def DecodeHamming(HammingCode):
     """Decodes a Hamming(7,4) code into a nibble."""

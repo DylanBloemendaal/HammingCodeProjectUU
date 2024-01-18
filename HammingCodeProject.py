@@ -2,6 +2,7 @@
 # Hugo van Hattem       1957074
 
 import random as rn
+import math
 
 # ###############################CLASSES#####################################
 
@@ -130,6 +131,17 @@ def EncodeNibble(nibble):
     # Return HammingCode in the form of a list
     return HammingCode
 
+def toBinary(Message):
+    """Converts a string into Binary to use in the HammingCode"""
+    ListInt=[]
+    BinaryMessage = ""
+    for char in Message:
+        ListInt.append(ord(char))
+    for integer in ListInt:
+        BinaryMessage = BinaryMessage + str("{0:07b}".format(integer))
+
+    return BinaryMessage
+
 
 def EncodeMessage(message):
     """Splits the message into nibbles of size 4 and encodes them into Hamming(7,4) codes.
@@ -234,6 +246,17 @@ def DecodeHamming(HammingCode):
             nibble += str(bit)
 
     return nibble
+
+def toString(BinMessage):
+    """Converts a string of all Binary numbers to a String of text"""
+    line = BinMessage
+    Text = ""
+    n = 7
+    Thingy = [line[i:i+n] for i in range(0, len(line), n)]
+    for i in Thingy:
+        j = int(i, 2)
+        Text += chr(j)
+    return Text
 
 
 # #################################MAIN########################################

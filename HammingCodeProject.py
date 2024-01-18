@@ -2,6 +2,8 @@
 # Hugo van Hattem       1957074
 
 import random as rn
+import time
+import math
 
 # ###############################CLASSES#####################################
 
@@ -133,7 +135,8 @@ def EncodeNibble(nibble):
 
 def EncodeMessage(message):
     """Splits the message into nibbles of size 4 and encodes them into Hamming(7,4) codes.
-        The input should be in the form of a string (e.g. '011000111000')"""
+        The input should be in binary format in the form of a string (e.g. '011000111000').
+        If the message is not divisible by 4, then 0 to 3 zeros will be added to the message"""
 
     # Split the message into a list of nibbles
     nibbles = []
@@ -147,6 +150,16 @@ def EncodeMessage(message):
             counter = 0
         counter += 1
 
+    # Any leftover bits are added into a last nibble topped with extra zero's
+    if len(nibble) != 0:
+        AddedZeros = 0
+        while len(nibble) < 4:
+            nibble.append(0)
+            AddedZeros += 1
+        nibbles.append(nibble)
+    else:
+        AddedZeros = 0
+
     # Create a Hamming(7,4) code for each nibble.
     HammingCodes = []
     for nibble in nibbles:
@@ -154,7 +167,8 @@ def EncodeMessage(message):
         HammingCodes.append(HammingCode)
 
     # Return list of HammingCodes in the form of a list
-    return HammingCodes
+    # Return the amount of zeros added to make the message divisible by 4
+    return HammingCodes, AddedZeros
 
 
 # TODO: Write a function that randomly converts a given number of bits to test
@@ -236,6 +250,18 @@ def DecodeHamming(HammingCode):
     return nibble
 
 
+def DecodeMessage(Corrected, addedzeros):
+    """Decodes a list of HammingCodes into a message."""
+
+    message = ""
+    for HammingCode in Corrected:
+        nibble = DecodeHamming(HammingCode)
+        message += nibble
+
+    # Return the message with the extra zeros removed
+    return message[::-1][addedzeros:][::-1]
+
+
 # #################################MAIN########################################
 
 # TODO: Your code should be able to translate a given message, provided as a string,
@@ -248,7 +274,8 @@ def DecodeHamming(HammingCode):
 # the speed with the matrix implementation.
 
 
-x = [1,0,1,1,0,1,0]
-print(BitParity([x]))
+x = "111111111111111110001010000101010101101010110101011111111111111110010"
+y, z = EncodeMessage(x)
+print(DecodeMessage(y, z))
 
 

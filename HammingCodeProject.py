@@ -173,7 +173,7 @@ def EncodeRandom():
 
 def parity(HammingCodes):
     """Checks if there aren't any mistakes in the nibble"""
-      for Codes in HammingCodes:
+    for Codes in HammingCodes:
         Recieved = Vector(Codes)
         sevenfourparity = Matrix([[0,0,0,1,1,1,1], [0,1,1,0,0,1,1],[1,0,1,0,1,0,1]])*Recieved
         sfparity = bin(int(''.join(map(str, sevenfourparity)), 2) << 1)
@@ -183,10 +183,43 @@ def parity(HammingCodes):
         else:
             Codes[sfparity-1] = (Codes[sfparity-1] + 1) % 2
             Corrected.append(Codes)
-            
+
         return Corrected
 
+def bitparity(HammingCodes):
+    """Checks if there are any mistakes in the nibble using Bit"""
+    
+    for Codes in HammingCodes:
+        Bits = []
+        Counter = 1
+        while Counter < 8:
+            if Codes[Counter-1] == 1:
+                bit = "{0:03b}".format(Counter)
+                bits = [int(i) for i in bit]
+                Bits.append(bits)
+            Counter += 1
+        bit1 = 0
+        bit2 = 0
+        bit3 = 0
+        for X in Bits:
+            bit1 = (bit1 + int(X[0])) % 2
+            bit2 = (bit2 + int(X[1])) % 2
+            bit3 = (bit3 + int(X[2])) % 2
+        finalbit = 4 * bit1 + 2*bit2 + bit1
+        BitCorrected = []
+        if finalbit == 0:
+            BitCorrected.append(Codes)
+        else:
+            Codes[finalbit-1] = (Codes[finalbit-1] + 1) % 2
+            BitCorrected.append(Codes)
+    return BitCorrected
+
+
         
+            
+        
+        
+
 
 
 def DecodeHamming(HammingCode):

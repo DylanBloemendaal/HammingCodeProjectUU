@@ -166,18 +166,24 @@ def EncodeRandom():
 
     RandomBits = [rn.randint(0, 1) for i in range(4)]
     nibble = ""
+
     for bit in RandomBits:
         nibble += str(bit)
+
     HammingCode = EncodeNibble(nibble)
+
     return nibble, HammingCode
 
-def parity(HammingCodes):
-    """Checks if there aren't any mistakes in the nibble"""
+
+def Parity(HammingCodes):
+    """Checks if there aren't any mistakes in the nibble using matrix multiplication."""
+
     for Codes in HammingCodes:
         Recieved = Vector(Codes)
         sevenfourparity = Matrix([[0,0,0,1,1,1,1], [0,1,1,0,0,1,1],[1,0,1,0,1,0,1]])*Recieved
-        sfparity = bin(int(''.join(map(str, sevenfourparity)), 2) << 1)
+        sfparity = 4 * sevenfourparity[0] + 2 * sevenfourparity[1] + sevenfourparity[2]
         Corrected = []
+
         if sfparity == 0:
             Corrected.append(Codes)
         else:
@@ -186,40 +192,37 @@ def parity(HammingCodes):
 
         return Corrected
 
-def bitparity(HammingCodes):
-    """Checks if there are any mistakes in the nibble using Bit"""
-    
+
+def BitParity(HammingCodes):
+    """Checks if there are any mistakes in the nibble using bitwise operations."""
+
     for Codes in HammingCodes:
         Bits = []
         Counter = 1
+
         while Counter < 8:
+
             if Codes[Counter-1] == 1:
                 bit = "{0:03b}".format(Counter)
                 bits = [int(i) for i in bit]
                 Bits.append(bits)
             Counter += 1
-        bit1 = 0
-        bit2 = 0
-        bit3 = 0
+
+        error = [0, 0, 0]
+
         for X in Bits:
-            bit1 = (bit1 + int(X[0])) % 2
-            bit2 = (bit2 + int(X[1])) % 2
-            bit3 = (bit3 + int(X[2])) % 2
-        finalbit = 4 * bit1 + 2*bit2 + bit1
+            error = Vector(error) + Vector(X)
+
+        finalbit = 4 * error[0] + 2*error[1] + error[2]
         BitCorrected = []
+
         if finalbit == 0:
             BitCorrected.append(Codes)
         else:
             Codes[finalbit-1] = (Codes[finalbit-1] + 1) % 2
             BitCorrected.append(Codes)
+
     return BitCorrected
-
-
-        
-            
-        
-        
-
 
 
 def DecodeHamming(HammingCode):
@@ -245,8 +248,7 @@ def DecodeHamming(HammingCode):
 # the speed with the matrix implementation.
 
 
-x = '1001101011010011010101001100101011111'
-print(EncodeMessage(x))
-y, z = EncodeRandom()
-print(y, z)
-print(DecodeHamming(z))
+x = [1,0,1,1,0,1,0]
+print(BitParity([x]))
+
+

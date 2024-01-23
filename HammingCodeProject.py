@@ -7,10 +7,6 @@ import math
 
 # ###############################CLASSES#####################################
 
-# TODO: Create classes to perform calculations with matrices and vectors whose
-#       elements are 0 or 1. Your classes should support at least addition and
-#       matrix multiplication.
-
 
 class Vector:
     """Working: V + V"""
@@ -111,8 +107,6 @@ class Matrix:
 
 # ################################FUNCTIONS####################################
 
-# TODO: Write functions that can encode, decode, and possibly correct messages
-#       using the parity bit and the Hamming(7,4) code.
 
 def EncodeNibble(nibble):
     """Turns a string of four bits (e.g. '1011') into a Hamming(7,4) code
@@ -183,14 +177,10 @@ def EncodeMessage(message):
     return HammingCodes, AddedZeros
 
 
-# TODO: Write a function that randomly converts a given number of bits to test
-#       your code.
-
-
-def EncodeRandom():
+def EncodeRandom(length=50):
     """Generates a random nibble and encodes it into a Hamming(7,4) code."""
 
-    RandomBits = [rn.randint(0, 1) for i in range(rn.randint(10, 100))]
+    RandomBits = [rn.randint(0, 1) for i in range(length)]
     RandomMessage = ""
 
     for bit in RandomBits:
@@ -204,11 +194,11 @@ def EncodeRandom():
 def Parity(HammingCode):
     """Checks if there aren't any mistakes in the nibble using matrix multiplication."""
 
+    Corrected = []
     for Codes in HammingCode:
         Recieved = Vector(Codes)
         sevenfourparity = Matrix([[0,0,0,1,1,1,1], [0,1,1,0,0,1,1],[1,0,1,0,1,0,1]])*Recieved
         sfparity = 4 * sevenfourparity[0] + 2 * sevenfourparity[1] + sevenfourparity[2]
-        Corrected = []
 
         if sfparity == 0:
             Corrected.append(Codes)
@@ -216,7 +206,7 @@ def Parity(HammingCode):
             Codes[sfparity-1] = (Codes[sfparity-1] + 1) % 2
             Corrected.append(Codes)
 
-        return Corrected
+    return Corrected
 
 
 def BitParity(HammingCode):
@@ -286,29 +276,13 @@ def toString(BinMessage):
     return Text
 
 
-# #################################MAIN########################################
+# #################################EXAMPLES####################################
 
-# TODO: Your code should be able to translate a given message, provided as a string,
-#       into binary format and be able to encode it, correct it if necessary and decode
-#       it again.
 
-# TODO: Extend your code to handle more complex Hamming codes.
-
-# TODO: Implement the functions also based on bitwise operations and compare
-# the speed with the matrix implementation.
-
-"""
-x = "111111111111111110001010000101010101101010110101011111111111111110010"
-x, codes, z = EncodeRandom()
-print(codes)
-print()
-corrected = BitParity(codes)
-print(corrected)
-print(corrected == codes)
-print()
-"""
+# Example code
 
 message = "Hello World!"
+
 print("\nMessage:")
 print(message)
 
@@ -317,10 +291,25 @@ print("\nMessage in binary:")
 print(bits)
 
 encoded, addedzeros = EncodeMessage(bits)
-print("\nEncoded:")
+print("\nEncoded message:")
 print(encoded)
 
-decoded = DecodeMessage(encoded, addedzeros)
+
+# Create an error in the message by flipping the bit at a chosen position
+HammingCodeIndex = 5
+BitIndex = 5
+
+
+encoded[HammingCodeIndex][BitIndex] -= 1
+encoded[HammingCodeIndex][BitIndex] *= -1
+print("\nEncoded message with error:")
+print(encoded)
+
+corrected = BitParity(encoded)
+print("\nCorrected message:")
+print(corrected)
+
+decoded = DecodeMessage(corrected, addedzeros)
 print("\nDecoded:")
 print(decoded)
 
@@ -331,7 +320,3 @@ print(result)
 correct = bits == decoded
 print("\nCorrect:")
 print(correct)
-
-
-
-

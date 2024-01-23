@@ -133,6 +133,18 @@ def EncodeNibble(nibble):
     return HammingCode
 
 
+def toBinary(Message):
+    """Converts a string into Binary to use in the HammingCode"""
+    ListInt=[]
+    BinaryMessage = ""
+    for char in Message:
+        ListInt.append(ord(char))
+    for integer in ListInt:
+        BinaryMessage = BinaryMessage + str("{0:07b}".format(integer))
+
+    return BinaryMessage
+
+
 def EncodeMessage(message):
     """Splits the message into nibbles of size 4 and encodes them into Hamming(7,4) codes.
         The input should be in binary format in the form of a string (e.g. '011000111000').
@@ -262,6 +274,18 @@ def DecodeMessage(Corrected, addedzeros=0):
     return message[::-1][addedzeros:][::-1]
 
 
+def toString(BinMessage):
+    """Converts a string of all Binary numbers to a String of text"""
+    line = BinMessage
+    Text = ""
+    n = 7
+    Thingy = [line[i:i+n] for i in range(0, len(line), n)]
+    for i in Thingy:
+        j = int(i, 2)
+        Text += chr(j)
+    return Text
+
+
 # #################################MAIN########################################
 
 # TODO: Your code should be able to translate a given message, provided as a string,
@@ -273,7 +297,7 @@ def DecodeMessage(Corrected, addedzeros=0):
 # TODO: Implement the functions also based on bitwise operations and compare
 # the speed with the matrix implementation.
 
-
+"""
 x = "111111111111111110001010000101010101101010110101011111111111111110010"
 x, codes, z = EncodeRandom()
 print(codes)
@@ -281,3 +305,33 @@ print()
 corrected = BitParity(codes)
 print(corrected)
 print(corrected == codes)
+print()
+"""
+
+message = "Hello World!"
+print("\nMessage:")
+print(message)
+
+bits = toBinary(message)
+print("\nMessage in binary:")
+print(bits)
+
+encoded, addedzeros = EncodeMessage(bits)
+print("\nEncoded:")
+print(encoded)
+
+decoded = DecodeMessage(encoded, addedzeros)
+print("\nDecoded:")
+print(decoded)
+
+result = toString(decoded)
+print("\nResulting message:")
+print(result)
+
+correct = bits == decoded
+print("\nCorrect:")
+print(correct)
+
+
+
+

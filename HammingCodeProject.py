@@ -178,21 +178,21 @@ def EncodeMessage(message):
 def EncodeRandom():
     """Generates a random nibble and encodes it into a Hamming(7,4) code."""
 
-    RandomBits = [rn.randint(0, 1) for i in range(4)]
-    nibble = ""
+    RandomBits = [rn.randint(0, 1) for i in range(rn.randint(10, 100))]
+    RandomMessage = ""
 
     for bit in RandomBits:
-        nibble += str(bit)
+        RandomMessage += str(bit)
 
-    HammingCode = EncodeNibble(nibble)
+    HammingCodes, AddedZeros = EncodeMessage(RandomMessage)
 
-    return nibble, HammingCode
+    return RandomMessage, HammingCodes, AddedZeros
 
 
-def Parity(HammingCodes):
+def Parity(HammingCode):
     """Checks if there aren't any mistakes in the nibble using matrix multiplication."""
 
-    for Codes in HammingCodes:
+    for Codes in HammingCode:
         Recieved = Vector(Codes)
         sevenfourparity = Matrix([[0,0,0,1,1,1,1], [0,1,1,0,0,1,1],[1,0,1,0,1,0,1]])*Recieved
         sfparity = 4 * sevenfourparity[0] + 2 * sevenfourparity[1] + sevenfourparity[2]
@@ -207,10 +207,11 @@ def Parity(HammingCodes):
         return Corrected
 
 
-def BitParity(HammingCodes):
+def BitParity(HammingCode):
     """Checks if there are any mistakes in the nibble using bitwise operations."""
 
-    for Codes in HammingCodes:
+    BitCorrected = []
+    for Codes in HammingCode:
         Bits = []
         Counter = 1
 
@@ -228,7 +229,6 @@ def BitParity(HammingCodes):
             error = Vector(error) + Vector(X)
 
         finalbit = 4 * error[0] + 2*error[1] + error[2]
-        BitCorrected = []
 
         if finalbit == 0:
             BitCorrected.append(Codes)
@@ -250,7 +250,7 @@ def DecodeHamming(HammingCode):
     return nibble
 
 
-def DecodeMessage(Corrected, addedzeros):
+def DecodeMessage(Corrected, addedzeros=0):
     """Decodes a list of HammingCodes into a message."""
 
     message = ""
@@ -275,7 +275,9 @@ def DecodeMessage(Corrected, addedzeros):
 
 
 x = "111111111111111110001010000101010101101010110101011111111111111110010"
-y, z = EncodeMessage(x)
-print(DecodeMessage(y, z))
-
-
+x, codes, z = EncodeRandom()
+print(codes)
+print()
+corrected = BitParity(codes)
+print(corrected)
+print(corrected == codes)

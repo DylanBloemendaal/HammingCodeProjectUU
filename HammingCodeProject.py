@@ -340,7 +340,7 @@ def toString(BinMessage):
 
 # ###################################MAIN######################################
 
-"""
+
 # Example code
 
 message = "Hello World!"
@@ -383,15 +383,3 @@ print(result)
 correct = message == result
 print("\nCorrect:")
 print(correct)
-
-"""
-
-_, x, _ = EncodeRandom(100000)
-
-start = time.time()
-y = Parity(x)
-end = time.time()
-print(f"Time: {end - start}")
-
-
-

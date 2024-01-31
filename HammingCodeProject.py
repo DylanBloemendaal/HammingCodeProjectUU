@@ -11,7 +11,8 @@ class Vector:
     """This class is designed for binary operations.
         Vector operations are only defined on Vectors with binary elements.
         The following operations are defined on this class:
-        Vector addition, Vector and Matrix multiplication."""
+        Vector addition, Vector and Matrix multiplication.
+        The input for this class should be a list of integers."""
 
     def __init__(self, lst):
         self.lst = lst
@@ -241,16 +242,16 @@ def EncodeMessage(message, length=0):
     return HammingCodes, AddedZeros
 
 
-def EncodeRandom(length=50):
+def EncodeRandom(MessageLength=50, HammingCodeLength=7):
     """Generates a random nibble and encodes it into a Hamming(7,4) code."""
 
-    RandomBits = [rn.randint(0, 1) for i in range(length)]
+    RandomBits = [rn.randint(0, 1) for i in range(MessageLength)]
     RandomMessage = ""
 
     for bit in RandomBits:
         RandomMessage += str(bit)
 
-    HammingCodes, AddedZeros = EncodeMessage(RandomMessage)
+    HammingCodes, AddedZeros = EncodeMessage(RandomMessage, HammingCodeLength)
 
     return RandomMessage, HammingCodes, AddedZeros
 
@@ -370,7 +371,7 @@ def toString(BinMessage):
 
 # Example code
 
-message = "Hello World!"
+message, HammingCodeLength = "Hello World!", 15
 
 print("\nMessage:")
 print(message)
@@ -379,7 +380,7 @@ bits = toBinary(message)
 print("\nMessage in binary:")
 print(bits)
 
-encoded, addedzeros = EncodeMessage(bits, 15)
+encoded, addedzeros = EncodeMessage(bits, HammingCodeLength)
 print("\nEncoded message:")
 print(encoded)
 
@@ -412,4 +413,4 @@ print("\nCorrect:")
 print(correct)
 
 print()
-print(DecodeHamming(EncodeBitwise("10001100100", 15)))
+print(DecodeHamming(EncodeBitwise("10001100100", HammingCodeLength)))

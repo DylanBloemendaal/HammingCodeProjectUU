@@ -7,8 +7,11 @@ import time
 # ###############################CLASSES#####################################
 
 
-class Vector:
-    """Working: V + V"""
+class Vector: 
+    """This class is designed for binary operations.
+        Vector operations are only defined on Vectors with binary elements.
+        The following operations are defined on this class:
+        Vector addition, Vector and Matrix multiplication."""
 
     def __init__(self, lst):
         self.lst = lst
@@ -17,7 +20,7 @@ class Vector:
         return str(self.lst)
 
     def __add__(self, other):
-
+        """Vector addition is defined here."""
         if len(self.lst) != len(other.lst):
             raise TypeError("Cannot add vectors of different sizes")
 
@@ -34,7 +37,7 @@ class Vector:
         return
 
 
-class Matrix:
+class Matrix: 
     """Matrix multiplication and addition return as a list"""
     """Working: M + M, M * M, M * V"""
 

@@ -3,7 +3,6 @@
 
 import random as rn
 import time
-import math
 
 # ###############################CLASSES#####################################
 
@@ -109,20 +108,22 @@ class Matrix:
 
 
 def toBinary(Message):
-    """Converts a string into Binary to use in the HammingCode"""
+    """Takes a string and turns it into a binary string where each character is represented by 8 bits"""
     ListInt = []
     BinaryMessage = ""
+
     for char in Message:
         ListInt.append(ord(char))
+
     for integer in ListInt:
-        BinaryMessage = BinaryMessage + str("{0:08b}".format(integer))
+        BinaryMessage += str("{0:08b}".format(integer))
 
     return BinaryMessage
 
 
 def EncodeNibble(nibble):
-    """Turns a string of four bits (e.g. '1011') into a Hamming(7,4) code
-        using matrix multiplication"""
+    """Encodes a string of four bits into a Hamming(7,4) code
+        using matrix multiplication. The output will be a list."""
 
     x = Vector([int(bit) for bit in nibble])
     # Generator matrix
@@ -135,45 +136,56 @@ def EncodeNibble(nibble):
                 [0, 0, 0, 1]])
 
     HammingCode = G*x
-    # Return HammingCode in the form of a list
     return HammingCode
 
 
 def EncodeBitwise(bitstring, length):
+    """Encodes a string of any amount of bits into a Hamming code of given length.
+        The output will be a list."""
 
-    # Place bitstring in an empty Hamming Code
+    # Place bitstring in a Hamming code with all parity bits = 0
     y = 0
     z = 0
     paritybits = []
     HammingCode = [0 for i in range(length)]
     for indx in range(length):
+
+        # Check if the selected position will be a parity bit
         if indx == 2**z - 1:
             paritybits.append(indx)
             z += 1
             continue
-        else:
+
+        # Place the next bit if the position should be a message bit
+        elif y < len(bitstring):
             HammingCode[indx] = int(bitstring[y])
             y += 1
 
     # Change the parity bits using bitwise operations
     for paritybit in paritybits:
         parity = 0
+
+        # Calculate the parity for the current parity check
         for indx in range(len(HammingCode)):
+
             if (indx + 1) % (2 * paritybit + 2) >= (paritybit + 1):
                 parity += HammingCode[indx]
+
+        # Change parity bit based on parity
         HammingCode[paritybit] = parity % 2
 
     return HammingCode
 
 
-def EncodeMessage(message, length=0):
+def EncodeMessage(message, length=0): 
     """Splits the message into nibbles of size 4 and encodes them into Hamming(7,4) codes.
         The input should be in binary format in the form of a string (e.g. '011000111000').
         If the message is not divisible by 4, then 0 to 3 zeros will be added to the message"""
-
     matrix = False
+
     if length in (1, 2):
         raise ValueError("Length of Hammingcode must be greater than 3")
+
     elif length == 0:
         length += 7
         matrix = True
@@ -185,27 +197,35 @@ def EncodeMessage(message, length=0):
     nibbles = []
     nibble = []
     counter = 1
+
     for bit in message:
         nibble.append(int(bit))
+
         if counter % messagebits == 0:
             nibbles.append(nibble)
             nibble = []
             counter = 0
+
         counter += 1
 
     # Any leftover bits are added into a last nibble topped with extra zero's
     if len(nibble) != 0:
         AddedZeros = 0
+
         while len(nibble) < messagebits:
             nibble.append(0)
             AddedZeros += 1
+
         nibbles.append(nibble)
+
     else:
         AddedZeros = 0
 
     # Create a Hamming code for each nibble.
     HammingCodes = []
+
     for nibble in nibbles:
+
         if matrix:
             HammingCode = EncodeNibble(nibble)
         else:
@@ -232,10 +252,10 @@ def EncodeRandom(length=50):
     return RandomMessage, HammingCodes, AddedZeros
 
 
-def Parity(HammingCodes):
+def Parity(HammingCodes): 
     """Checks if there are any mistakes in the nibble using matrix multiplication."""
-
     Corrected = []
+
     for Codes in HammingCodes:
         Recieved = Vector(Codes)
         sevenfourparity = Matrix([[0,0,0,1,1,1,1], [0,1,1,0,0,1,1],[1,0,1,0,1,0,1]])*Recieved
@@ -250,20 +270,22 @@ def Parity(HammingCodes):
     return Corrected
 
 
-def BitParity(HammingCodes):
+def BitParity(HammingCodes): 
     """Checks if there are any mistakes in the nibble using bitwise operations."""
 
     # Calculate how many parity bits are in the Hamming Codes
     z = 0
     paritybits = []
+
     for indx, bit in enumerate(HammingCodes[0]):
+
         if indx == 2**z - 1:
             paritybits.append(indx)
             z += 1
 
     length = len(paritybits)
-
     BitCorrected = []
+
     for Codes in HammingCodes:
         Bits = []
         Counter = 1
@@ -283,6 +305,7 @@ def BitParity(HammingCodes):
             error = Vector(error) + Vector(X)
 
         finalbitstring = ""
+
         for bit in error:
             finalbitstring += str(bit)
 
@@ -297,12 +320,13 @@ def BitParity(HammingCodes):
     return BitCorrected
 
 
-def DecodeHamming(HammingCode):
+def DecodeHamming(HammingCode): 
     """Decodes a Hamming code into a bitstring."""
-
     z = 0
     bitstring = ""
+
     for indx, bit in enumerate(HammingCode):
+
         if indx == 2**z - 1:
             z += 1
             continue
@@ -312,10 +336,10 @@ def DecodeHamming(HammingCode):
     return bitstring
 
 
-def DecodeMessage(Corrected, addedzeros=0):
+def DecodeMessage(Corrected, addedzeros=0): 
     """Decodes a list of HammingCodes into a message."""
-
     message = ""
+
     for HammingCode in Corrected:
         bitstring = DecodeHamming(HammingCode)
         message += bitstring
@@ -324,13 +348,13 @@ def DecodeMessage(Corrected, addedzeros=0):
     return message[::-1][addedzeros:][::-1]
 
 
-def toString(BinMessage):
+def toString(BinMessage): 
     """Converts a string of all Binary numbers to a String of text"""
-
     line = BinMessage
     Text = ""
     n = 8
     Thingy = [line[i:i+n] for i in range(0, len(line), n)]
+
     for i in Thingy:
         j = int(i, 2)
         Text += chr(j)
@@ -383,3 +407,6 @@ print(result)
 correct = message == result
 print("\nCorrect:")
 print(correct)
+
+print()
+print(DecodeHamming(EncodeBitwise("10001100100", 15)))

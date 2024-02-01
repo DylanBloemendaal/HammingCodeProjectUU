@@ -2,17 +2,19 @@
 # Hugo van Hattem       1957074
 
 import random as rn
-import time
+
 
 # ###############################CLASSES#####################################
 
 
-class Vector: 
+class Vector:
     """This class is designed for binary operations.
         Vector operations are only defined on Vectors with binary elements.
         The following operations are defined on this class:
-        Vector addition, Vector and Matrix multiplication.
-        The input for this class should be a list of integers."""
+        - Vector addition,
+        - Vector and Matrix multiplication.
+        The input for this class should be a list of integers.
+        All operations will return a list instead of a Vector or Matrix object"""
 
     def __init__(self, lst):
         self.lst = lst
@@ -38,9 +40,15 @@ class Vector:
         return
 
 
-class Matrix: 
-    """Matrix multiplication and addition return as a list"""
-    """Working: M + M, M * M, M * V"""
+class Matrix:
+    """This class is designed for binary operations.
+        Matrix operations are only defined on Matrices with binary elements.
+        The following operations are defined on this class:
+        - Matrix addition,
+        - Matrix multiplication
+        - Matrix and Vector multiplication.
+        The input for this class should be a nested list of lists, where each list represents a row of the Matrix.
+        All operations will return a list instead of a Vector or Matrix object"""
 
     def __init__(self, lst):
         self.lst = lst
@@ -49,7 +57,7 @@ class Matrix:
         return str(self.lst)
 
     def __add__(self, other):
-
+        """Matrix addition is defined here"""
         if len(self.lst) != len(other.lst) or len(self.lst[0]) != len(other.lst[0]):
             raise TypeError("Matrix dimensions do not support addition")
 
@@ -66,7 +74,7 @@ class Matrix:
         return matrix_sum
 
     def __mul__(self, other):
-
+        """Matrix multiplication and Matrix and Vector multiplication are defined here"""
         if len(self.lst[0]) != len(other.lst):
             raise TypeError("Matrix/Vector dimensions do not support multiplication")
 
@@ -112,7 +120,8 @@ class Matrix:
 
 
 def toBinary(Message):
-    """Takes a string and turns it into a binary string where each character is represented by 8 bits"""
+    """Takes a string and turns it into a binary string
+        where each character is represented by 8 bits"""
     ListInt = []
     BinaryMessage = ""
 
@@ -128,7 +137,6 @@ def toBinary(Message):
 def EncodeNibble(nibble):
     """Encodes a string of four bits into a Hamming(7,4) code
         using matrix multiplication. The output will be a list."""
-
     x = Vector([int(bit) for bit in nibble])
     # Generator matrix
     G = Matrix([[1, 1, 0, 1],
@@ -146,7 +154,6 @@ def EncodeNibble(nibble):
 def EncodeBitwise(bitstring, length):
     """Encodes a string of any amount of bits into a Hamming code of given length.
         The output will be a list."""
-
     # Place bitstring in a Hamming code with all parity bits = 0
     y = 0
     z = 0
@@ -181,64 +188,64 @@ def EncodeBitwise(bitstring, length):
     return HammingCode
 
 
-def EncodeMessage(message, length=0): 
-    """Splits the message into nibbles of size 4 and encodes them into Hamming(7,4) codes.
-        The input should be in binary format in the form of a string (e.g. '011000111000').
-        If the message is not divisible by 4, then 0 to 3 zeros will be added to the message"""
-    matrix = False
+def EncodeMessage(message, length=0):
+    """Given a binary message and length n, will split the message into chunks,
+        which it encodes into Hamming(n,k) codes using bitwise operations.
+        If the message cannot be evenly split, it will add extra zeros to the last Hamming code.
+        If the length parameter is left empty, Matrix multiplication will be used instead.
+        The return value will be a list of Hamming codes and the amount of zeros that were added."""
+    matrixmethod = False
 
-    if length in (1, 2):
+    if length in (1, 2, 3):
         raise ValueError("Length of Hammingcode must be greater than 3")
 
     elif length == 0:
         length += 7
-        matrix = True
+        matrixmethod = True
 
     paritybits = len(bin(length)) - 2
     messagebits = length - paritybits
 
-    # Split the message into a list of nibbles
-    nibbles = []
-    nibble = []
+    # Split the message into a list of bitstrings
+    bitstrings = []
+    bitstring = ""
     counter = 1
 
     for bit in message:
-        nibble.append(int(bit))
+        bitstring += bit
 
         if counter % messagebits == 0:
-            nibbles.append(nibble)
-            nibble = []
+            bitstrings.append(bitstring)
+            bitstring = ""
             counter = 0
 
         counter += 1
 
-    # Any leftover bits are added into a last nibble topped with extra zero's
-    if len(nibble) != 0:
+    # Any leftover bits are added into a last bitstring topped with extra zero's
+    if len(bitstring) != 0:
         AddedZeros = 0
 
-        while len(nibble) < messagebits:
-            nibble.append(0)
+        while len(bitstring) < messagebits:
+            bitstring += "0"
             AddedZeros += 1
 
-        nibbles.append(nibble)
+        bitstrings.append(bitstring)
 
     else:
         AddedZeros = 0
 
-    # Create a Hamming code for each nibble.
+    # Create a Hamming code for each bitstring.
     HammingCodes = []
 
-    for nibble in nibbles:
+    for bitstring in bitstrings:
 
-        if matrix:
-            HammingCode = EncodeNibble(nibble)
+        if matrixmethod:
+            HammingCode = EncodeNibble(bitstring)
         else:
-            HammingCode = EncodeBitwise(nibble, length)
+            HammingCode = EncodeBitwise(bitstring, length)
 
         HammingCodes.append(HammingCode)
 
-    # Return list of HammingCodes in the form of a list
-    # Return the amount of zeros added to make the message divisible by 4
     return HammingCodes, AddedZeros
 
 
@@ -256,27 +263,30 @@ def EncodeRandom(MessageLength=50, HammingCodeLength=7):
     return RandomMessage, HammingCodes, AddedZeros
 
 
-def Parity(HammingCodes): 
-    """Checks if there are any mistakes in the nibble using matrix multiplication."""
+def Parity(HammingCodes):
+    """Given a list of Hamming codes, will correct singular errors in
+        each code using matrix multipication."""
     Corrected = []
 
-    for Codes in HammingCodes:
-        Recieved = Vector(Codes)
+    for Code in HammingCodes:
+        # Calculate the position of the error using the parity-check matrix.
+        Recieved = Vector(Code)
         sevenfourparity = Matrix([[0,0,0,1,1,1,1], [0,1,1,0,0,1,1],[1,0,1,0,1,0,1]])*Recieved
         sfparity = 4 * sevenfourparity[0] + 2 * sevenfourparity[1] + sevenfourparity[2]
 
+        # Correct the error if needed
         if sfparity == 0:
-            Corrected.append(Codes)
+            Corrected.append(Code)
         else:
-            Codes[sfparity-1] = (Codes[sfparity-1] + 1) % 2
-            Corrected.append(Codes)
+            Code[sfparity-1] = (Code[sfparity-1] + 1) % 2
+            Corrected.append(Code)
 
     return Corrected
 
 
-def BitParity(HammingCodes): 
-    """Checks if there are any mistakes in the nibble using bitwise operations."""
-
+def BitParity(HammingCodes):
+    """Given a list of Hamming codes, will correct singular errors in
+        each code using bitwise operations."""
     # Calculate how many parity bits are in the Hamming Codes
     z = 0
     paritybits = []
@@ -290,10 +300,12 @@ def BitParity(HammingCodes):
     length = len(paritybits)
     BitCorrected = []
 
+    # Correct each of the Hamming codes
     for Codes in HammingCodes:
         Bits = []
         Counter = 1
 
+        # Create a list of binary strings which represent the bit positions
         while Counter <= len(HammingCodes[0]):
 
             if Codes[Counter-1] == 1:
@@ -303,18 +315,20 @@ def BitParity(HammingCodes):
 
             Counter += 1
 
-        error = [0 for i in range(length)]
+        # Calculate the position of the error
+        errorposition = [0 for i in range(length)]
 
         for X in Bits:
-            error = Vector(error) + Vector(X)
+            errorposition = Vector(errorposition) + Vector(X)
 
         finalbitstring = ""
 
-        for bit in error:
+        for bit in errorposition:
             finalbitstring += str(bit)
 
         finalbit = int(finalbitstring, 2)
 
+        # Correct the error if needed
         if finalbit == 0:
             BitCorrected.append(Codes)
         else:
@@ -324,13 +338,14 @@ def BitParity(HammingCodes):
     return BitCorrected
 
 
-def DecodeHamming(HammingCode): 
+def DecodeHamming(HammingCode):
     """Decodes a Hamming code into a bitstring."""
     z = 0
     bitstring = ""
 
     for indx, bit in enumerate(HammingCode):
 
+        # Ignore if bit is a parity bit
         if indx == 2**z - 1:
             z += 1
             continue
@@ -340,28 +355,29 @@ def DecodeHamming(HammingCode):
     return bitstring
 
 
-def DecodeMessage(Corrected, addedzeros=0): 
-    """Decodes a list of HammingCodes into a message."""
+def DecodeMessage(HammingCodes, addedzeros=0):
+    """Decodes a list of HammingCodes into a binary string with extra added zeros removed."""
     message = ""
 
-    for HammingCode in Corrected:
+    for HammingCode in HammingCodes:
         bitstring = DecodeHamming(HammingCode)
         message += bitstring
 
-    # Return the message with the extra zeros removed
     return message[::-1][addedzeros:][::-1]
 
 
-def toString(BinMessage): 
+def toString(BinMessage):
     """Converts a string of all Binary numbers to a String of text"""
     line = BinMessage
     Text = ""
-    n = 8
-    Thingy = [line[i:i+n] for i in range(0, len(line), n)]
+    length = 8
 
-    for i in Thingy:
-        j = int(i, 2)
-        Text += chr(j)
+    # Split the message into strings of length 8
+    bitstrings = [line[i:i+length] for i in range(0, len(line), length)]
+
+    for bitstring in bitstrings:
+        value = int(bitstring, 2)
+        Text += chr(value)
 
     return Text
 
@@ -371,7 +387,7 @@ def toString(BinMessage):
 
 # Example code
 
-message, HammingCodeLength = "Hello World!", 15
+message, HammingCodeLength = "Hello, World!", 15
 
 print("\nMessage:")
 print(message)
@@ -386,8 +402,8 @@ print(encoded)
 
 
 # Create an error in the message by flipping the bit at a chosen position
-HammingCodeIndex = 1
-BitIndex = 13
+HammingCodeIndex = 0
+BitIndex = 4
 # -----------------------------------------------------------------------------
 
 encoded[HammingCodeIndex][BitIndex] -= 1
@@ -411,6 +427,3 @@ print(result)
 correct = message == result
 print("\nCorrect:")
 print(correct)
-
-print()
-print(DecodeHamming(EncodeBitwise("10001100100", HammingCodeLength)))

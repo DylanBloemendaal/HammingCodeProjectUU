@@ -30,26 +30,37 @@ To use this class, input a netsed list of lists where each list represents a row
 #### Functions:
 Below are examples of how to use the functions we have made: <br />
 
-_toBinary_
+_toBinary("Hi")_ <br />
+returns "0100100001101001"
 
-_EncodeNibble_
+_EncodeNibble_("1001") <br />
+returns [0, 0, 1, 1, 0, 0, 1]
 
-_EncodeBitwise_
+_EncodeBitwise_("10001100100", 15) <br />
+returns [1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0]
 
-_EncodeMessage_
+_EncodeMessage_("1011000", 7) <br />
+returns [[0, 1, 1, 0, 0, 1, 1], [0, 0, 0, 0, 0, 0, 0]], 1
 
-_EncodeRandom_
+_EncodeRandom_(5, 7) <br />
+returns "01101", [[1, 1, 0, 0, 1, 1, 0], [1, 1, 1, 0, 0, 0, 0]], 3
 
-_Parity_
+_Parity_([[1, 1, 1, 0, 0, 1, 1], [0, 0, 1, 0, 0, 0, 0]]) <br />
+returns [[0, 1, 1, 0, 0, 1, 1], [0, 0, 0, 0, 0, 0, 0]]
 
-_BitParity_
+_BitParity_([[1, 1, 1, 0, 0, 1, 1], [0, 0, 1, 0, 0, 0, 0]])
+returns [[0, 1, 1, 0, 0, 1, 1], [0, 0, 0, 0, 0, 0, 0]]
 
-_DecodeHamming_
+_DecodeHamming_([1, 0, 1, 1, 0, 1, 0]) <br />
+returns "1010"
 
-_DecodeMessage_
+_DecodeMessage_([[0, 1, 1, 0, 0, 1, 1], [0, 0, 0, 0, 0, 0, 0]], 1) <br />
+returns "1011000"
 
-_toString_
+_toString_("0100100001101001")
+returns "Hi"
 
+We have also provided some example code in the .py file.
 
 ### Credits:
 Dylan Bloemendaal (9485961) <br />

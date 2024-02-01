@@ -1,5 +1,5 @@
 # HammingCodeProjectUU
-Overview: 
+Overview: \\
 This Python script implements a Hamming code generator and corrector. The Hamming Codes are created using either Matrix Multiplication or Bit-Wise operation.
 
 Features:
